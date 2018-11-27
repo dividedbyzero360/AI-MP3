@@ -1,26 +1,23 @@
 package MiniProject3;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
 
-public class BiGram {
-
+public class BiGramV2 {
 	private double delta;
+	private Language language;
 
-	public BiGram(double delta) {
+	public BiGramV2(double delta, Language language) {
 		this.delta = delta;
+		this.language = language;
 	}
 
 	private static List<Character> dictCharacters = Arrays.asList('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k',
 			'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z');
+	private double[][] storage = new double[dictCharacters.size()][dictCharacters.size()];
+	private double[] countOfRows = new double[dictCharacters.size()];
 
-	private HashMap<Language, double[][]> languageBiagram = new HashMap<Language, double[][]>();
-	private HashMap<Language, double[]> languageCountOfRows = new HashMap<Language, double[]>();
-
-	public void fit(List<Character> characters, Language language) {
-		double[][] storage = new double[characters.size()][characters.size()];
-		double[] countOfRows = new double[characters.size()];
-		languageBiagram.put(language, storage);
-		languageCountOfRows.put(language, countOfRows);
+	public void fit(List<Character> characters) {
 		for (int i = 0; i < characters.size() - 1; i++) {
 			if (characters.get(i) != '+' && characters.get(i + 1) != '+') {
 				int rowNo = dictCharacters.indexOf(characters.get(i));
@@ -33,11 +30,18 @@ public class BiGram {
 
 	}
 	
+	public Language getLanguage()
+	{
+		return language;
+	}
+
 	public double getConditionalProbabilty(char first, char second)
 	{
 		int rowNo = dictCharacters.indexOf(first);
 		int columnNo = dictCharacters.indexOf(second);
-		return 0;
+		double numerator=storage[rowNo][columnNo] + delta;
+		double denominator=countOfRows[rowNo]+ (delta*dictCharacters.size());
+		double conditionalProbability=numerator/denominator;
+		return conditionalProbability;
 	}
-
 }

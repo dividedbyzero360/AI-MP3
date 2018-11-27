@@ -4,6 +4,7 @@ import java.io.BufferedWriter;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.*;
 //https://stackoverflow.com/questions/4716503/reading-a-plain-text-file-in-java
 public class FileHandler {
 	public static String getString(String fileName) {
@@ -33,6 +34,33 @@ public class FileHandler {
 			}
 		}
 		return "";
+	}
+	
+	public static ArrayList<String> getSentences(String fileName)
+	{
+		ArrayList<String> sentences=new ArrayList<String>();
+		BufferedReader br = null;
+		String line="";
+		try {
+			br = new BufferedReader(new FileReader(fileName));
+			while((line=br.readLine())!=null)
+			{
+				sentences.add(line);
+			}
+		}
+		catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (br != null) {
+					br.close();
+				}
+
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		return sentences;
 	}
 	
 	public static void writeToFile(String line)
