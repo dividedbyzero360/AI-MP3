@@ -22,9 +22,12 @@ public class CleanFile {
 	}
 	
 	
-	private static String getCleanString(String s)
+	public static String getCleanString(String s)
 	{
-		s=s.toLowerCase().replaceAll(System.getProperty("line.separator"), " ").replaceAll("[^A-Za-z ]", "").replaceAll("\\s+", "+");
+		//different for french and english
+	    //s=s.replace("'","").replaceAll("’","") ;	
+		s=s.toLowerCase().replaceAll(System.getProperty("line.separator"), " ").replaceAll("[^A-Za-z ]", " ").replaceAll("\\s+", "+");
+		//FileHandler.writeToFile(s);
 		return s;
 	}
 }

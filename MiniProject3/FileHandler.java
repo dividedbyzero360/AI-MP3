@@ -20,6 +20,7 @@ public class FileHandler {
 				line = br.readLine();
 			}
 			String everything = sb.toString();
+//			System.out.println(everything);
 			return everything;
 		} catch (IOException e) {
 			e.printStackTrace();

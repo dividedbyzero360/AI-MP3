@@ -12,14 +12,15 @@ public class BiGramV2 {
 		this.language = language;
 	}
 
-	private static List<Character> dictCharacters = Arrays.asList('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k',
+	public static List<Character> dictCharacters = Arrays.asList('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k',
 			'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z');
-	private double[][] storage = new double[dictCharacters.size()][dictCharacters.size()];
+	double[][] storage = new double[dictCharacters.size()][dictCharacters.size()];
 	private double[] countOfRows = new double[dictCharacters.size()];
 
 	public void fit(List<Character> characters) {
 		for (int i = 0; i < characters.size() - 1; i++) {
-			if (characters.get(i) != '+' && characters.get(i + 1) != '+') {
+		if (characters.get(i) != '+' && characters.get(i + 1) != '+')
+		{
 				int rowNo = dictCharacters.indexOf(characters.get(i));
 				int columnNo = dictCharacters.indexOf(characters.get(i + 1));
 				storage[rowNo][columnNo]++;
