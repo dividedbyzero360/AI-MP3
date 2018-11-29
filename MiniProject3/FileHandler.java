@@ -5,8 +5,56 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.*;
+import java.text.Normalizer;
 //https://stackoverflow.com/questions/4716503/reading-a-plain-text-file-in-java
 public class FileHandler {
+	
+	private static BufferedWriter bw;
+	private static int line=0;
+	
+	public static void incrementLineNo()
+	{
+		FileHandler.line++;
+	}
+	
+	public static void writeSentences( String sentence, boolean printToConsoleAsWell)
+	{
+		
+		if(printToConsoleAsWell)
+		{
+			System.out.println(sentence);
+		}
+		try {
+			if(bw==null)
+			{
+				bw=new BufferedWriter(new FileWriter("out"+FileHandler.line+".txt"));
+			}		
+			bw.write(sentence);
+			bw.newLine();
+			bw.flush();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public static void closeWriter()
+	{
+		try{
+			if(bw!=null)
+			{
+				bw.close();
+				bw=null;
+			}
+		}
+		catch(IOException ex)
+		{
+			System.out.println("Error occured while closing the file");
+		}
+	}
+	
+	
+	
+	
 	public static String getString(String fileName) {
 		BufferedReader br = null;
 		try {
@@ -20,6 +68,8 @@ public class FileHandler {
 				line = br.readLine();
 			}
 			String everything = sb.toString();
+//			System.out.println(everything);
+			everything = Normalizer.normalize(everything, Normalizer.Form.NFD);
 //			System.out.println(everything);
 			return everything;
 		} catch (IOException e) {

@@ -2,6 +2,8 @@ package MiniProject3;
 
 public enum Language {
 	ENGLISH,
-	FRENCH
+	FRENCH,
+	SWEDISH,
+	GERMAN
 
 }

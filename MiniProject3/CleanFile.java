@@ -6,6 +6,9 @@ public class CleanFile {
 			, 'u', 'v', 'w', 'x', 'y', 'z');
 	
 	
+	
+	
+	
 	public static ArrayList<Character> getAllCharactersInTheString(String s)
 	{
 		ArrayList<Character> textCharList=new ArrayList<>();
@@ -26,7 +29,8 @@ public class CleanFile {
 	{
 		//different for french and english
 	    //s=s.replace("'","").replaceAll("’","") ;	
-		s=s.toLowerCase().replaceAll(System.getProperty("line.separator"), " ").replaceAll("[^A-Za-z ]", " ").replaceAll("\\s+", "+");
+		//s=s.toLowerCase().replaceAll(System.getProperty("line.separator"), " ").replaceAll("[^A-Za-z ]", " ").replaceAll("\\s+", "+");
+		s=s.toLowerCase().replaceAll(System.getProperty("line.separator"), " ").replaceAll("[^A-Za-z ]", " ").replaceAll("\\s+", "");
 		//FileHandler.writeToFile(s);
 		return s;
 	}

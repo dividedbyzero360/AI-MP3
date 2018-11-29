@@ -10,23 +10,20 @@ public class PlayGround {
 	public static void main(String[] args) {
 		double delta = 0.5;
 
-		ArrayList<Character> englishCharacters = getAllCharacters(
-				Arrays.asList("en-moby-dick.txt", "en-the-little-prince.txt"));
-		ArrayList<Character> frenchCharacters = getAllCharacters(
-				Arrays.asList("fr-vingt-mille-lieues-sous-les-mers.txt", "fr-le-petit-prince.txt"));
+//		System.out.println(CleanFile.getCleanString("I'd hate AI"));
+//		ArrayList<Character> swedishCharacters = getAllCharacters(Arrays.asList("germanSmall.txt"));
+//		System.out.println(swedishCharacters);
+		ArrayList<Character> englishCharacters = getAllCharacters(Arrays.asList("en-moby-dick.txt", "en-the-little-prince.txt"));
+		ArrayList<Character> frenchCharacters = getAllCharacters(Arrays.asList("fr-vingt-mille-lieues-sous-les-mers.txt", "fr-le-petit-prince.txt"));
+		ArrayList<Character> swedishCharacters = getAllCharacters(Arrays.asList("german.txt"));
+		//System.out.println(swedishCharacters);
 		createBiGrams(delta, englishCharacters, Language.ENGLISH);
 		createBiGrams(delta, frenchCharacters, Language.FRENCH);
+		createBiGrams(delta, swedishCharacters, Language.GERMAN);
 		createUniGrams(delta, englishCharacters, Language.ENGLISH);
 		createUniGrams(delta, frenchCharacters, Language.FRENCH);
-
-		// for(int i=0; i<biGramList.size();i++)
-		// {
-		// totalProbabilities.put(biGramList.get(i).getLanguage(), new
-		// Double(0));
-		// }
-		fun("sentence_to_predict.txt");
-
-		// System.out.println(CleanFile.getCleanString("warabir'adf"));
+		createUniGrams(delta, swedishCharacters, Language.GERMAN);
+		predict("sentence_to_predict.txt");
 
 	}
 
@@ -43,11 +40,11 @@ public class PlayGround {
 
 	}
 
-	public static void createBiGrams(double delta, ArrayList<Character> textCharList, Language language) {
+	public static  void createBiGrams(double delta, ArrayList<Character> textCharList, Language language) {
 
 		BiGramV2 biGram = new BiGramV2(delta, language);
 		biGram.fit(textCharList);
-		System.out.println(textCharList.size());
+		//System.out.println(textCharList.size());
 		biGramList.add(biGram);
 	}
 
@@ -55,11 +52,13 @@ public class PlayGround {
 
 		Unigram uniGram = new Unigram(delta, language);
 		uniGram.fit(textCharList);
-		System.out.println(textCharList.size());
+		//System.out.println(textCharList.size());
 		uniGramList.add(uniGram);
 	}
+	
+	
 
-	public static void fun(String fileName) {
+	public static void predict(String fileName) {
 		ArrayList<String> sentences = FileHandler.getSentences(fileName);
 		ArrayList<ArrayList<Character>> m = new ArrayList<>();
 		for (int i = 0; i < sentences.size(); i++) {
@@ -67,33 +66,43 @@ public class PlayGround {
 			m.add(textCharList);
 		}
 		for (int i = 0; i < sentences.size(); i++) {
-			System.out.println(sentences.get(i));
-			System.out.println("UNIGRAM MODEL:");
+			FileHandler.incrementLineNo();
+			FileHandler.writeSentences(sentences.get(i),true);
 			ArrayList<Character> textCharList = m.get(i);
-			HashMap<Language, Double> totalProbabilities = getUnigramResult(textCharList);
-			Language winnerLanguage = printWinner(totalProbabilities);
-			System.out.println("According to the unigram model, the sentence is in " + winnerLanguage.toString());
+			print( "UNIGRAM",1,textCharList );
+			FileHandler.writeSentences("--------------------------",true);
+			print( "BIGRAM",2,textCharList );
+			FileHandler.closeWriter();
 			System.out.println("\n");
 		}
 
-		System.out.println("\n");
-		for (int i = 0; i < sentences.size(); i++) {
-			System.out.println(sentences.get(i));
-			System.out.println("BIGRAM MODEL:");
-			ArrayList<Character> textCharList = m.get(i);
-			HashMap<Language, Double> totalProbabilities = getBigramResult(textCharList);
-			Language winnerLanguage = printWinner(totalProbabilities);
-			System.out.println("According to the unigram model, the sentence is in " + winnerLanguage.toString());
-			System.out.println("\n");
-		}
 
+
+	}
+	
+	
+	
+	private static void print(String model, int type,ArrayList<Character> textCharList )
+	{
+		HashMap<Language, Double> totalProbabilities =null;
+		FileHandler.writeSentences(model+" MODEL:",true);
+		if(type==1)
+		{
+			totalProbabilities=getUnigramResult(textCharList);
+		}
+		else if(type==2)
+		{
+			totalProbabilities=getBigramResult(textCharList);
+		}
+		
+		Language winnerLanguage = printWinner(totalProbabilities);
+		FileHandler.writeSentences("According to the "+ model +" model, the sentence is in " + winnerLanguage.toString(),true);
 	}
 
 	public static Language printWinner(HashMap<Language, Double> totalProbabilities) {
 		double max = -Double.MAX_VALUE;
 		Language language = Language.ENGLISH;
 		for (Map.Entry<Language, Double> languageAndProbability : totalProbabilities.entrySet()) {
-			//System.out.println(languageAndProbability.getValue() + " " + languageAndProbability.getKey());
 			if (languageAndProbability.getValue() > max) {
 				max = languageAndProbability.getValue();
 				language = languageAndProbability.getKey();
@@ -107,17 +116,15 @@ public class PlayGround {
 		HashMap<Language, Double> totalProbabilities = new HashMap<Language, Double>();
 		for (int j = 0; j < textCharList.size() - 1; j++) {
 			if (textCharList.get(j) != '+' && textCharList.get(j + 1) != '+') {
+				FileHandler.writeSentences("BIGRAM :"+textCharList.get(j)+""+textCharList.get(j + 1),false);
 				for (int k = 0; k < biGramList.size(); k++) {
 					BiGramV2 temp = biGramList.get(k);
-					double conditionalProbability = temp.getConditionalProbabilty(textCharList.get(j),
-							textCharList.get(j + 1));
-					conditionalProbability = Math.log10(conditionalProbability);
-					Double oldValue = totalProbabilities.get(temp.getLanguage());
-					totalProbabilities.put(temp.getLanguage(),
-							oldValue != null ? oldValue + conditionalProbability : conditionalProbability);
-
+					double conditionalProbability = Math.log10(temp.getConditionalProbabilty(textCharList.get(j),
+							textCharList.get(j + 1)));
+					updateTotalProbabilities(totalProbabilities,temp.getLanguage(),conditionalProbability);
+					FileHandler.writeSentences(temp.getLanguage().toString()+ ": p("+textCharList.get(j+1)+"|"+textCharList.get(j) +") ="+conditionalProbability+"==> log prob of sentence so far: " +totalProbabilities.get(temp.getLanguage()),false);
 				}
-
+				FileHandler.writeSentences("",false);
 			}
 		}
 		return totalProbabilities;
@@ -127,186 +134,69 @@ public class PlayGround {
 		HashMap<Language, Double> totalProbabilities = new HashMap<Language, Double>();
 		for (int j = 0; j < textCharList.size(); j++) {
 			if (textCharList.get(j) != '+') {
+				FileHandler.writeSentences("UNIGRAM :"+textCharList.get(j),false);
 				for (int k = 0; k < uniGramList.size(); k++) {
 					Unigram temp = uniGramList.get(k);
-					double conditionalProbability = temp.getProbabilty(textCharList.get(j));
-					conditionalProbability = Math.log10(conditionalProbability);
-					Double oldValue = totalProbabilities.get(temp.getLanguage());
-					totalProbabilities.put(temp.getLanguage(),
-							oldValue != null ? oldValue + conditionalProbability : conditionalProbability);
+					double conditionalProbability = Math.log10(temp.getProbabilty(textCharList.get(j)));
+					updateTotalProbabilities(totalProbabilities,temp.getLanguage(),conditionalProbability);
+					FileHandler.writeSentences(temp.getLanguage().toString()+ ": p("+textCharList.get(j)+") ="+conditionalProbability+"==> log prob of sentence so far: " +totalProbabilities.get(temp.getLanguage()),false);
 
 				}
-
+				FileHandler.writeSentences("",false);
 			}
 		}
 		return totalProbabilities;
 	}
+	
+	public static void updateTotalProbabilities(HashMap<Language, Double> totalProbabilities,Language l,double conditionalProbability)
+	{
+		
+		Double oldValue = totalProbabilities.get( l);
+		totalProbabilities.put( l,oldValue != null ? oldValue + conditionalProbability : conditionalProbability);
+				
+	}
 
 }
 
-// private static void predict(String fileName) {
-// ArrayList<String> sentences=FileHandler.getSentences(fileName);
-// ArrayList<ArrayList<Character>> m=new ArrayList<>();
-// for(int i=0;i< sentences.size();i++)
-// {
-// ArrayList<Character> textCharList =
-// CleanFile.getAllCharactersInTheString(sentences.get(i));
-// m.add(textCharList);
-// }
-//
-// for (int i = 0; i < sentences.size(); i++) {
-// System.out.println(sentences.get(i));
-// System.out.println("UNIGRAM MODEL:");
-// ArrayList<Character> textCharList = m.get(i);
-// for (int j = 0; j < textCharList.size() ; j++) {
-// if (textCharList.get(j) != '+') {
-// for (int k = 0; k < uniGramList.size(); k++) {
-// Unigram temp = uniGramList.get(k);
-// double conditionalProbability = temp.getProbabilty(textCharList.get(j));
-// conditionalProbability = Math.log10(conditionalProbability);
-// Double oldValue = totalProbabilities.get(temp.getLanguage());
-// totalProbabilities.put(temp.getLanguage(),
-// oldValue != null ? oldValue + conditionalProbability :
-// conditionalProbability);
-//
-// }
-//
-// }
-// }
-// double max=-Double.MAX_VALUE;
-// Language language=Language.ENGLISH;
-// for(Map.Entry<Language,Double> languageAndProbability:
-// totalProbabilities.entrySet())
-// {
-// System.out.println(languageAndProbability.getValue() + "
-// "+languageAndProbability.getKey() );
-// if(languageAndProbability.getValue() > max)
-// {
-// max=languageAndProbability.getValue();
-// language=languageAndProbability.getKey();
-// }
-// }
-// System.out.println("According to the Unigram model, the sentence is in
-// "+language.toString());
-//
-// totalProbabilities.clear();
-//
-//
-// }
-//
-// for(int i=0;i< sentences.size();i++)
-// {
-// System.out.println(sentences.get(i));
-// System.out.println("BiGram MODEL:");
-// ArrayList<Character> textCharList = m.get(i);
-// for(int j=0;j<textCharList.size()-1;j++)
-// {
-// if(textCharList.get(j)!='+' && textCharList.get(j+1)!='+')
-// {
-// for(int k=0;k<biGramList.size();k++)
-// {
-// BiGramV2 temp=biGramList.get(k);
-// double
-// conditionalProbability=temp.getConditionalProbabilty(textCharList.get(j),
-// textCharList.get(j+1));
-// conditionalProbability=Math.log10(conditionalProbability);
-// Double oldValue=totalProbabilities.get(temp.getLanguage());
-// totalProbabilities.put(temp.getLanguage(), oldValue !=null
-// ?oldValue+conditionalProbability: conditionalProbability);
-//
-// }
-//
-// }
-// }
-//
-//
-//
-// double max=-Double.MAX_VALUE;
-// Language language=Language.ENGLISH;
-// for(Map.Entry<Language,Double> languageAndProbability:
-// totalProbabilities.entrySet())
-// {
-// System.out.println(languageAndProbability.getValue() + "
-// "+languageAndProbability.getKey() );
-// if(languageAndProbability.getValue() > max)
-// {
-// max=languageAndProbability.getValue();
-// language=languageAndProbability.getKey();
-// }
-// }
-// System.out.println("According to the bigram model, the sentence is in
-// "+language.toString());
-//
-// totalProbabilities.clear();
-// }
-//
-// }
 
-// private static void predict(String fileName) {
-// ArrayList<String> sentences=FileHandler.getSentences(fileName);
-// for(int i=0;i< sentences.size();i++)
-// {
-// System.out.println(sentences.get(i));
-// ArrayList<Character> textCharList =
-// CleanFile.getAllCharactersInTheString(sentences.get(i));
-// System.out.println(textCharList);
-// for(int j=0;j<textCharList.size()-1;j++)
-// {
-// if(textCharList.get(j)!='+' && textCharList.get(j+1)!='+')
-// {
-// for(int k=0;k<biGramList.size();k++)
-// {
-// BiGramV2 temp=biGramList.get(k);
-// double
-// conditionalProbability=temp.getConditionalProbabilty(textCharList.get(j),
-// textCharList.get(j+1));
-// conditionalProbability=Math.log10(conditionalProbability);
-//// System.out.println(temp.getLanguage());
-//// System.out.println(totalProbabilities.get(temp.getLanguage()));
-// Double oldValue=totalProbabilities.get(temp.getLanguage());
-// totalProbabilities.put(temp.getLanguage(), oldValue !=null
-// ?oldValue+conditionalProbability: conditionalProbability);
-// //[j, a, i, m, e, +, l, i, a]
-// //[i, +, h, a, t, e, +, a, i, +
-// //char[] arra=new char[]{'j', 'a', 'i', 'm', 'e', '+', 'l', 'i', 'a'};
-//// char[] arra=new char[]{'i', '+', 'h', 'a', 't', 'e', '+', 'a', 'i', '+'};
-//// for(int d=0;d<arra.length-1;d++)
-//// {
-////// if(arra[d]!='+' && arra[d+1]!='+')
-////// {
-//// int row=BiGramV2.dictCharacters.indexOf(arra[d]);
-//// int column=BiGramV2.dictCharacters.indexOf(arra[d+1]);
-//// System.out.println(arra[d]+" "+arra[d+1] + "
-// "+(temp.storage[row][column]));
-////// }
-//// }
-//// System.out.println("----------------------------------------------------------");
-//
-//
-// }
-//
-// }
-// }
+
+
+
+
+//public static void predict(String fileName) {
+//	ArrayList<String> sentences = FileHandler.getSentences(fileName);
+//	ArrayList<ArrayList<Character>> m = new ArrayList<>();
+//	for (int i = 0; i < sentences.size(); i++) {
+//		ArrayList<Character> textCharList = CleanFile.getAllCharactersInTheString(sentences.get(i));
+//		m.add(textCharList);
+//	}
+//	for (int i = 0; i < sentences.size(); i++) {
+//		System.out.println(sentences.get(i));
+//		FileHandler.incrementLineNo();
+//		FileHandler.writeSentences(sentences.get(i));
+////		System.out.println("UNIGRAM MODEL:");
+////		FileHandler.writeSentences("UNIGRAM MODEL:");
+//		ArrayList<Character> textCharList = m.get(i);
+////		HashMap<Language, Double> totalProbabilities = getUnigramResult(textCharList);
+////		Language winnerLanguage = printWinner(totalProbabilities);
+////		System.out.println("According to the unigram model, the sentence is in " + winnerLanguage.toString());
+////		FileHandler.writeSentences("According to the unigram model, the sentence is in " + winnerLanguage.toString());
+//		print( "UNIGRAM",1,textCharList );
+//		System.out.println("--------------------------");
+//		FileHandler.writeSentences("--------------------------");
+//		print( "BIGRAM",2,textCharList );
+////		FileHandler.writeSentences("BIGRAM MODEL:");
+////		System.out.println("BIGRAM MODEL:");
+////		totalProbabilities = getBigramResult(textCharList);
+////		winnerLanguage = printWinner(totalProbabilities);
+////		System.out.println("According to the BIGRAM model, the sentence is in " + winnerLanguage.toString());
+////		FileHandler.writeSentences("According to the BIGRAM model, the sentence is in " + winnerLanguage.toString());
+//		FileHandler.closeWriter();
+//		System.out.println("\n");
+//	}
 //
 //
 //
-// double max=-Double.MAX_VALUE;
-// Language language=Language.ENGLISH;
-// for(Map.Entry<Language,Double> languageAndProbability:
-// totalProbabilities.entrySet())
-// {
-// System.out.println(languageAndProbability.getValue() + "
-// "+languageAndProbability.getKey() );
-// if(languageAndProbability.getValue() > max)
-// {
-// max=languageAndProbability.getValue();
-// language=languageAndProbability.getKey();
-// }
-// }
-// System.out.println("According to the bigram model, the sentence is in
-// "+language.toString());
-//
-// totalProbabilities.clear();
-// }
-//
-// }
+//}
+
+
