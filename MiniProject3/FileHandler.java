@@ -127,5 +127,59 @@ public class FileHandler {
 			e.printStackTrace();
 		}
 	}
+	
+	public static void writeDump(Language l, GramType type, ArrayList<String> dumpWriteToFile )
+	{
+		String fileName="";
+		if(l==Language.ENGLISH)
+		{
+			if(type==GramType.UNIGRAM)
+			{
+				fileName+="unigramEN.txt";
+			}
+			else if(type==GramType.BIGRAM)
+			{
+				fileName+="bigramEN.txt";
+			}
+		}
+		else if(l==Language.FRENCH)
+		{
+			if(type==GramType.UNIGRAM)
+			{
+				fileName+="unigramFR.txt";
+			}
+			else if(type==GramType.BIGRAM)
+			{
+				fileName+="bigramFR.txt";
+			}
+		}
+		else if(l==Language.GERMAN)
+		{
+			if(type==GramType.UNIGRAM)
+			{
+				fileName+="unigramOT.txt";
+			}
+			else if(type==GramType.BIGRAM)
+			{
+				fileName+="bigramOT.txt";
+			}
+		}
+		
+		BufferedWriter wr=null;
+		try{
+			wr=new BufferedWriter(new FileWriter(fileName));
+			for(String s:dumpWriteToFile)
+			{
+				wr.write(s);
+				wr.newLine();
+			}
+			wr.flush();
+			wr.close();
+		}
+		catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 
 }

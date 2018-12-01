@@ -1,14 +1,13 @@
 package MiniProject3;
 import java.util.*;
 
-public class Unigram {
+public class Unigram implements IGram{
 
 	HashMap<Character,Integer> storage = new HashMap<Character,Integer>();
 	private double delta;
 	private Language language;
 	private int noOfCharacters=0;
-	public static List<Character> dictCharacters = Arrays.asList('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k',
-			'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z');
+	
 
 	public Unigram(double delta, Language language) {
 		this.delta = delta;
@@ -36,7 +35,7 @@ public class Unigram {
 	{
 		
 		double numerator=storage.get(first) + delta;
-		double denominator=noOfCharacters+ (delta*dictCharacters.size());
+		double denominator=noOfCharacters+ (delta*Resources.dictCharacters.size());
 		double probability=numerator/denominator;
 		return probability;
 	}

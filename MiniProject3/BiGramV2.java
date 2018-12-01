@@ -1,9 +1,7 @@
 package MiniProject3;
-
-import java.util.Arrays;
 import java.util.List;
 
-public class BiGramV2 {
+public class BiGramV2  implements IGram{
 	private double delta;
 	private Language language;
 
@@ -12,17 +10,16 @@ public class BiGramV2 {
 		this.language = language;
 	}
 
-	public static List<Character> dictCharacters = Arrays.asList('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k',
-			'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z');
-	double[][] storage = new double[dictCharacters.size()][dictCharacters.size()];
-	private double[] countOfRows = new double[dictCharacters.size()];
+
+	double[][] storage = new double[Resources.dictCharacters.size()][Resources.dictCharacters.size()];
+	private double[] countOfRows = new double[Resources.dictCharacters.size()];
 
 	public void fit(List<Character> characters) {
 		for (int i = 0; i < characters.size() - 1; i++) {
 		if (characters.get(i) != '+' && characters.get(i + 1) != '+')
 		{
-				int rowNo = dictCharacters.indexOf(characters.get(i));
-				int columnNo = dictCharacters.indexOf(characters.get(i + 1));
+				int rowNo = Resources.dictCharacters.indexOf(characters.get(i));
+				int columnNo = Resources.dictCharacters.indexOf(characters.get(i + 1));
 				storage[rowNo][columnNo]++;
 				countOfRows[rowNo]++;
 			}
@@ -38,11 +35,17 @@ public class BiGramV2 {
 
 	public double getConditionalProbabilty(char first, char second)
 	{
-		int rowNo = dictCharacters.indexOf(first);
-		int columnNo = dictCharacters.indexOf(second);
+		//System.out.println(first + " "+second);
+		int rowNo = Resources.dictCharacters.indexOf(first);
+		int columnNo = Resources.dictCharacters.indexOf(second);
 		double numerator=storage[rowNo][columnNo] + delta;
-		double denominator=countOfRows[rowNo]+ (delta*dictCharacters.size());
+		//System.out.println(numerator);
+		double denominator=countOfRows[rowNo]+ (delta*Resources.dictCharacters.size());
+//		System.out.println("countOfRows "+ countOfRows[rowNo]);
+//		System.out.println(denominator);
 		double conditionalProbability=numerator/denominator;
+//		System.out.println(conditionalProbability);
 		return conditionalProbability;
 	}
+	
 }
