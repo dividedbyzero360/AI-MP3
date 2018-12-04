@@ -41,6 +41,7 @@ public class BiGramV2  implements IGram{
 		double numerator=storage[rowNo][columnNo] + delta;
 		//System.out.println(numerator);
 		double denominator=countOfRows[rowNo]+ (delta*Resources.dictCharacters.size());
+//		System.out.println(delta);
 //		System.out.println("countOfRows "+ countOfRows[rowNo]);
 //		System.out.println(denominator);
 		double conditionalProbability=numerator/denominator;

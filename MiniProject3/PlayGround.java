@@ -30,6 +30,16 @@ public class PlayGround {
 			writeDumps();
 		});
 		predict("sentence_to_predict.txt");
+//		delta=1;
+//		createGrams(delta, englishCharacters, Language.ENGLISH);
+//		createGrams(delta, frenchCharacters, Language.FRENCH);
+//		createGrams(delta, germanCharacters, Language.GERMAN);
+//		predict("sentence_to_predict.txt");
+//		delta=0;
+//		createGrams(delta, englishCharacters, Language.ENGLISH);
+//		createGrams(delta, frenchCharacters, Language.FRENCH);
+//		createGrams(delta, germanCharacters, Language.GERMAN);
+//		predict("sentence_to_predict.txt");
 
 	}
 	
@@ -149,47 +159,47 @@ public class PlayGround {
 
 	}
 	
+	// getResult2 does the same thing
 	
-	
-	public static HashMap<Language, Double> getResult(ArrayList<Character> textCharList, GramType type)
-	{
-		HashMap<Language, Double> totalProbabilities = new HashMap<Language, Double>(); 
-		if(type==GramType.BIGRAM)
-		{
-			for (int j = 0; j < textCharList.size() - 1; j++) {
-				if (textCharList.get(j) != '+' && textCharList.get(j + 1) != '+') {
-					FileHandler.writeSentences("BIGRAM :"+textCharList.get(j)+""+textCharList.get(j + 1),false);
-					for (int k = 0; k < biGramList.size(); k++) {
-						BiGramV2 temp = biGramList.get(k);
-						double conditionalProbability = Math.log10(temp.getConditionalProbabilty(textCharList.get(j),
-								textCharList.get(j + 1)));
-						updateTotalProbabilities(totalProbabilities,temp.getLanguage(),conditionalProbability);
-						FileHandler.writeSentences(temp.getLanguage().toString()+ ": p("+textCharList.get(j+1)+"|"+textCharList.get(j) +") ="+conditionalProbability+"==> log prob of sentence so far: " +totalProbabilities.get(temp.getLanguage()),false);
-					}
-					FileHandler.writeSentences("",false);
-				}
-			}
-		}
-		else if(type==GramType.UNIGRAM)
-		{
-			for (int j = 0; j < textCharList.size(); j++) {
-				if (textCharList.get(j) != '+') {
-					FileHandler.writeSentences("UNIGRAM :"+textCharList.get(j),false);
-					for (int k = 0; k < uniGramList.size(); k++) {
-						Unigram temp = uniGramList.get(k);
-						double conditionalProbability = Math.log10(temp.getProbabilty(textCharList.get(j)));
-						updateTotalProbabilities(totalProbabilities,temp.getLanguage(),conditionalProbability);
-						FileHandler.writeSentences(temp.getLanguage().toString()+ ": p("+textCharList.get(j)+") ="+conditionalProbability+"==> log prob of sentence so far: " +totalProbabilities.get(temp.getLanguage()),false);
-
-					}
-					FileHandler.writeSentences("",false);
-				}
-			}
-		}
-		
-		
-		return totalProbabilities;
-	}
+//	public static HashMap<Language, Double> getResult(ArrayList<Character> textCharList, GramType type)
+//	{
+//		HashMap<Language, Double> totalProbabilities = new HashMap<Language, Double>(); 
+//		if(type==GramType.BIGRAM)
+//		{
+//			for (int j = 0; j < textCharList.size() - 1; j++) {
+//				if (textCharList.get(j) != '+' && textCharList.get(j + 1) != '+') {
+//					FileHandler.writeSentences("BIGRAM :"+textCharList.get(j)+""+textCharList.get(j + 1),false);
+//					for (int k = 0; k < biGramList.size(); k++) {
+//						BiGramV2 temp = biGramList.get(k);
+//						double conditionalProbability = Math.log10(temp.getConditionalProbabilty(textCharList.get(j),
+//								textCharList.get(j + 1)));
+//						updateTotalProbabilities(totalProbabilities,temp.getLanguage(),conditionalProbability);
+//						FileHandler.writeSentences(temp.getLanguage().toString()+ ": p("+textCharList.get(j+1)+"|"+textCharList.get(j) +") ="+conditionalProbability+"==> log prob of sentence so far: " +totalProbabilities.get(temp.getLanguage()),false);
+//					}
+//					FileHandler.writeSentences("",false);
+//				}
+//			}
+//		}
+//		else if(type==GramType.UNIGRAM)
+//		{
+//			for (int j = 0; j < textCharList.size(); j++) {
+//				if (textCharList.get(j) != '+') {
+//					FileHandler.writeSentences("UNIGRAM :"+textCharList.get(j),false);
+//					for (int k = 0; k < uniGramList.size(); k++) {
+//						Unigram temp = uniGramList.get(k);
+//						double conditionalProbability = Math.log10(temp.getProbabilty(textCharList.get(j)));
+//						updateTotalProbabilities(totalProbabilities,temp.getLanguage(),conditionalProbability);
+//						FileHandler.writeSentences(temp.getLanguage().toString()+ ": p("+textCharList.get(j)+") ="+conditionalProbability+"==> log prob of sentence so far: " +totalProbabilities.get(temp.getLanguage()),false);
+//
+//					}
+//					FileHandler.writeSentences("",false);
+//				}
+//			}
+//		}
+//		
+//		
+//		return totalProbabilities;
+//	}
 	
 	
 	
@@ -204,7 +214,8 @@ public class PlayGround {
 		if(type==GramType.BIGRAM)
 		{
 			 size=textCharList.size() - 1;
-			 condition= ( list,  i)->{ return list.get(i)!='+' && list.get(i+1)!='+';}; 
+//			 condition= ( list,  i)->{ return list.get(i)!='+' && list.get(i+1)!='+';}; 
+			 condition= ( list,  i)->{return true;};
 			 firstStatetementToPrint=(list,  i)-> { return "BIGRAM :"+list.get(i)+""+list.get(i + 1);};
 			 secondStatetementToPrint=(list,  j)-> { 
 				 return (conditionalProbability)-> {
@@ -215,7 +226,8 @@ public class PlayGround {
 		}
 		else if(type==GramType.UNIGRAM){
 			size=textCharList.size() ;
-			condition= ( list,  i)->{ return list.get(i)!='+';};
+			//condition= ( list,  i)->{ return list.get(i)!='+';};
+			condition= ( list,  i)->{return true;};
 			firstStatetementToPrint=(list,  i)-> { return  "UNIGRAM :"+list.get(i);};
 			secondStatetementToPrint=(list,  j)-> { 
 				 return (conditionalProbability)-> {
@@ -232,13 +244,16 @@ public class PlayGround {
 				for (int k = 0; k < gramsList.size(); k++) 
 				{
 					double conditionalProbability=0;
+					double conditionalProbabilityWithoutLog=0;
 					IGram temp=gramsList.get(k);
 					if(temp instanceof Unigram )
 					{
+						conditionalProbabilityWithoutLog=((Unigram)temp).getProbabilty(textCharList.get(j));
 						conditionalProbability =Math.log10(((Unigram)temp).getProbabilty(textCharList.get(j)));
 					}
 					else if(temp instanceof BiGramV2)
 					{
+						conditionalProbabilityWithoutLog=((BiGramV2)temp).getConditionalProbabilty(textCharList.get(j),textCharList.get(j + 1));
 						conditionalProbability =Math.log10(((BiGramV2)temp).getConditionalProbabilty(textCharList.get(j),textCharList.get(j + 1)));
 								
 					}

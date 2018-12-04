@@ -1,6 +1,7 @@
 package MiniProject3;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -20,6 +21,10 @@ public class FileHandler {
 	public static void writeSentences( String sentence, boolean printToConsoleAsWell)
 	{
 		
+		File directory = new File(Resources.outFiles);
+		if (! directory.exists()){
+	        directory.mkdir();
+		}
 		if(printToConsoleAsWell)
 		{
 			System.out.println(sentence);
@@ -27,7 +32,7 @@ public class FileHandler {
 		try {
 			if(bw==null)
 			{
-				bw=new BufferedWriter(new FileWriter("out"+FileHandler.line+".txt"));
+				bw=new BufferedWriter(new FileWriter(directory+ "/"+"out"+FileHandler.line+".txt"));
 			}		
 			bw.write(sentence);
 			bw.newLine();
@@ -58,7 +63,7 @@ public class FileHandler {
 	public static String getString(String fileName) {
 		BufferedReader br = null;
 		try {
-			br = new BufferedReader(new FileReader(fileName));
+			br = new BufferedReader(new FileReader(Resources.trainingFiles+ fileName));
 			StringBuilder sb = new StringBuilder();
 			String line = br.readLine();
 
@@ -93,7 +98,7 @@ public class FileHandler {
 		BufferedReader br = null;
 		String line="";
 		try {
-			br = new BufferedReader(new FileReader(fileName));
+			br = new BufferedReader(new FileReader(Resources.predictionFile+fileName));
 			while((line=br.readLine())!=null)
 			{
 				sentences.add(line);
@@ -114,22 +119,28 @@ public class FileHandler {
 		return sentences;
 	}
 	
-	public static void writeToFile(String line)
-	{
-		BufferedWriter wr=null;
-		try {
-			 wr=new BufferedWriter(new FileWriter("output.txt"));
-			 wr.write(line);
-			 wr.flush();
-			 wr.close();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
+//	public static void writeToFile(String line)
+//	{
+//		BufferedWriter wr=null;
+//		try {
+//			 wr=new BufferedWriter(new FileWriter("output.txt"));
+//			 wr.write(line);
+//			 wr.flush();
+//			 wr.close();
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//	}
 	
 	public static void writeDump(Language l, GramType type, ArrayList<String> dumpWriteToFile )
 	{
+		File directory = new File("language_dump\\");
+		if (! directory.exists()){
+			System.out.println("HERE");
+	        directory.mkdir();
+		}
+		
 		String fileName="";
 		if(l==Language.ENGLISH)
 		{
@@ -167,7 +178,7 @@ public class FileHandler {
 		
 		BufferedWriter wr=null;
 		try{
-			wr=new BufferedWriter(new FileWriter(fileName));
+			wr=new BufferedWriter(new FileWriter(directory+ "/" +fileName));
 			for(String s:dumpWriteToFile)
 			{
 				wr.write(s);
